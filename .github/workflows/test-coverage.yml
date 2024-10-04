@@ -8,7 +8,7 @@ on:
     branches:
       - test-coverage   # Run on pull requests targeting the test-coverage branch
 
-jobs:
+jobs: 
   postman_tests:
     runs-on: ubuntu-latest
 

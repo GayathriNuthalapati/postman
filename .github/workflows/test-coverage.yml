@@ -41,28 +41,28 @@ jobs:
       - name: Calculate Test Coverage
         id: coverage
         run: |
-          # Extract total and failed tests using jq
-          TOTAL_TESTS=$(jq '.run.stats.tests.total' newman/newman-temp-report.json)
-          FAILED_TESTS=$(jq '.run.stats.tests.failed' newman/newman-temp-report.json)
+          # Extract total and failed assertions using jq
+          TOTAL_ASSERTIONS=$(jq '.run.stats.assertions.total' newman/newman-temp-report.json)
+          FAILED_ASSERTIONS=$(jq '.run.stats.assertions.failed' newman/newman-temp-report.json)
 
           # Debug: Print extracted values
-          echo "Total Tests: $TOTAL_TESTS"
-          echo "Failed Tests: $FAILED_TESTS"
+          echo "Total Assertions: $TOTAL_ASSERTIONS"
+          echo "Failed Assertions: $FAILED_ASSERTIONS"
 
           # Check if values were correctly extracted
-          if [ -z "$TOTAL_TESTS" ] || [ -z "$FAILED_TESTS" ]; then
-            echo "Error: Failed to extract test stats from the Newman report."
+          if [ -z "$TOTAL_ASSERTIONS" ] || [ -z "$FAILED_ASSERTIONS" ]; then
+            echo "Error: Failed to extract assertion stats from the Newman report."
             exit 1
           fi
 
-          # Calculate passed tests
-          PASSED_TESTS=$(($TOTAL_TESTS - $FAILED_TESTS))
+          # Calculate passed assertions
+          PASSED_ASSERTIONS=$(($TOTAL_ASSERTIONS - $FAILED_ASSERTIONS))
 
-          # Debug: Print passed test count
-          echo "Passed Tests: $PASSED_TESTS"
+          # Debug: Print passed assertion count
+          echo "Passed Assertions: $PASSED_ASSERTIONS"
 
           # Calculate coverage percentage
-          COVERAGE=$(echo "scale=2; ($PASSED_TESTS / $TOTAL_TESTS) * 100" | bc)
+          COVERAGE=$(echo "scale=2; ($PASSED_ASSERTIONS / $TOTAL_ASSERTIONS) * 100" | bc)
 
           # Fail the workflow if coverage is less than 80%
           if (( $(echo "$COVERAGE < 80" | bc -l) )); then
@@ -70,8 +70,8 @@ jobs:
             exit 1
           else
             echo "Test coverage is above 80% ($COVERAGE%)"
-            echo "Total Tests: $TOTAL_TESTS"
-            echo "Passed Tests: $PASSED_TESTS"
+            echo "Total Assertions: $TOTAL_ASSERTIONS"
+            echo "Passed Assertions: $PASSED_ASSERTIONS"
             echo "Coverage: $COVERAGE%"
           fi
 

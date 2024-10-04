@@ -49,10 +49,6 @@ jobs:
           
           # Calculate coverage percentage
           COVERAGE=$(echo "scale=2; ($PASSED_TESTS / $TOTAL_TESTS) * 100" | bc)
-          
-          echo "Total Tests: $TOTAL_TESTS"
-          echo "Passed Tests: $PASSED_TESTS"
-          echo "Coverage: $COVERAGE%"
 
           # Fail the workflow if coverage is less than 80%
           if (( $(echo "$COVERAGE < 80" | bc -l) )); then
@@ -60,6 +56,9 @@ jobs:
             exit 1
           else
             echo "Test coverage is above 80% ($COVERAGE%)"
+            echo "Total Tests: $TOTAL_TESTS"
+            echo "Passed Tests: $PASSED_TESTS"
+            echo "Coverage: $COVERAGE%"
           fi
 
       # Step 6: Upload HTML Report as an Artifact

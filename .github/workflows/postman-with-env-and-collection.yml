@@ -6,7 +6,7 @@ on:
       - postman-with-env-and-collection  # Run on pushes to the postman-with-env-and-collection branch
   pull_request:
     branches:
-      - postman-with-env-and-collection  # Run on pull requests targeting the postman-with-env-and-collection branch
+      - postman-with-env-and-collection  # Run on pull requests targeting the postman-with-env-and-collection branch 
 
 jobs:
   postman_tests:

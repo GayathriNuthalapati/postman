@@ -31,7 +31,7 @@ jobs:
       - name: Run Postman Collection and Generate HTML Report
         continue-on-error: true  # Continue even if there are errors
         run: |
-          npx newman run sys-api-oauth.postman_collection.json \
+          npx newman run error-postman/sys-api-oauth-error.postman_collection.json \
           --environment error-postman/sys-api-oauth.postman_environment.json \
           --reporters cli,html,json \
           --reporter-html-export newman/newman-report.html \

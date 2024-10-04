@@ -77,6 +77,13 @@ jobs:
         with:
           name: newman-html-report
           path: newman/newman-report.html
+          
+      # Step 8: Upload JSON Report as an Artifact
+      - name: Upload JSON Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: newman-json-report
+          path: newman-report.json
 
       # Step 8: Deploy Only if Coverage is Greater Than 80%
       - name: Deploy Application

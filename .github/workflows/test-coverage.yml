@@ -27,28 +27,36 @@ jobs:
       - name: Install Newman
         run: npm install -g newman newman-reporter-html
 
-      # Step 4: Run the Postman collection and generate HTML report
+      # Step 4: Run the Postman collection and generate HTML report (continue on error)
       - name: Run Postman Collection and Generate HTML Report
+        continue-on-error: true  # Continue even if there are errors
         run: |
           npx newman run postman/sys-api-oauth.postman_collection.json \
           --environment postman/sys-api-oauth.postman_environment.json \
           --reporters cli,html \
           --reporter-html-export newman/newman-report.html \
-          --reporter-cli-no-failures \ # Avoids exit on failures, so we can inspect
-          --suppress-exit-code 1 \
-          || true 
+          || true
 
-      # Step 5: Calculate Test Coverage Based on Newman CLI Results
+      # Step 5: Run the Postman collection and generate JSON report for coverage
+      - name: Generate JSON Report for Coverage Calculation
+        run: |
+          npx newman run postman/sys-api-oauth.postman_collection.json \
+          --environment postman/sys-api-oauth.postman_environment.json \
+          --reporters cli,json \
+          --reporter-json-export newman/newman-temp-report.json
+
+      # Step 6: Calculate Test Coverage Based on Newman JSON Report
       - name: Calculate Test Coverage
         id: coverage
         run: |
-          TOTAL_TESTS=$(npx newman run postman/sys-api-oauth.postman_collection.json \
-            --environment postman/sys-api-oauth.postman_environment.json \
-            --reporters cli,json --reporter-json-export newman/newman-temp-report.json \
-            | grep 'executed' | awk '{print $1}') 
-          
+          TOTAL_TESTS=$(jq '.run.stats.tests.total' newman/newman-temp-report.json)
           PASSED_TESTS=$(jq '.run.stats.tests.passed' newman/newman-temp-report.json)
-          
+
+          if [ "$TOTAL_TESTS" == "null" ] || [ "$PASSED_TESTS" == "null" ]; then
+            echo "Error: Failed to extract test stats from the Newman report."
+            exit 1
+          fi
+
           # Calculate coverage percentage
           COVERAGE=$(echo "scale=2; ($PASSED_TESTS / $TOTAL_TESTS) * 100" | bc)
 
@@ -63,17 +71,19 @@ jobs:
             echo "Coverage: $COVERAGE%"
           fi
 
-      # Step 6: Upload HTML Report as an Artifact
+      # Step 7: Upload HTML Report as an Artifact
       - name: Upload HTML Report
+        if: always()  # Always upload the report, even if tests fail
         uses: actions/upload-artifact@v3
         with:
           name: newman-html-report
           path: newman/newman-report.html
 
-      # Step 7: Deploy Only if Coverage is Greater Than 80%
+      # Step 8: Deploy Only if Coverage is Greater Than 80%
       - name: Deploy Application
-        if: success()
+        if: success()  # Proceed only if the coverage is above 80%
         run: |
           echo "Deploying application..."
           # Add your deployment commands here
+
 

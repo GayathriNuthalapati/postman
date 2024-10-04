@@ -79,7 +79,7 @@ jobs:
 
       # Step 8: Deploy Only if Coverage is Greater Than 80%
       - name: Deploy Application
-     #   if: success()  # Proceed only if the coverage is above 80%
+        if: success()  # Proceed only if the coverage is above 80%
         run: |
           echo "Deploying application..."
           # Add your deployment commands here

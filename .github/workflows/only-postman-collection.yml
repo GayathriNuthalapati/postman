@@ -3,10 +3,10 @@ name: Run Postman Collection
 on:
   push:
     branches:
-      - main  # Run on pushes to the main branch
+      - only-postman-collection  # Run on pushes to the main branch
   pull_request:
     branches:
-      - main  # Run on pull requests targeting the main branch
+      - only-postman-collection  # Run on pull requests targeting the main branch
 
 jobs:
   postman_tests:

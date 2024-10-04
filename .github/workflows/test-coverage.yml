@@ -48,6 +48,7 @@ jobs:
       # Step 6: Calculate Test Coverage Based on Newman JSON Report
       - name: Calculate Test Coverage
         id: coverage
+        if: always()
         run: |
           TOTAL_TESTS=$(jq '.run.stats.tests.total' newman/newman-temp-report.json)
           PASSED_TESTS=$(jq '.run.stats.tests.passed' newman/newman-temp-report.json)

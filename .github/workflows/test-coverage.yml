@@ -41,19 +41,25 @@ jobs:
       - name: Calculate Test Coverage
         id: coverage
         run: |
-          # Extract total and passed tests using jq
+          # Extract total and failed tests using jq
           TOTAL_TESTS=$(jq '.run.stats.tests.total' newman/newman-temp-report.json)
-          PASSED_TESTS=$(jq '.run.stats.tests.passed' newman/newman-temp-report.json)
+          FAILED_TESTS=$(jq '.run.stats.tests.failed' newman/newman-temp-report.json)
 
           # Debug: Print extracted values
           echo "Total Tests: $TOTAL_TESTS"
-          echo "Passed Tests: $PASSED_TESTS"
+          echo "Failed Tests: $FAILED_TESTS"
 
           # Check if values were correctly extracted
-          if [ -z "$TOTAL_TESTS" ] || [ -z "$PASSED_TESTS" ]; then
+          if [ -z "$TOTAL_TESTS" ] || [ -z "$FAILED_TESTS" ]; then
             echo "Error: Failed to extract test stats from the Newman report."
             exit 1
           fi
+
+          # Calculate passed tests
+          PASSED_TESTS=$(($TOTAL_TESTS - $FAILED_TESTS))
+
+          # Debug: Print passed test count
+          echo "Passed Tests: $PASSED_TESTS"
 
           # Calculate coverage percentage
           COVERAGE=$(echo "scale=2; ($PASSED_TESTS / $TOTAL_TESTS) * 100" | bc)

@@ -1,0 +1,78 @@
+name: Run Postman Collection with HTML Report and Coverage Check
+
+on:
+  push:
+    branches:
+      - test-coverage  # Run on pushes to the test-coverage  branch
+  pull_request:
+    branches:
+      - test-coverage   # Run on pull requests targeting the test-coverage  branch
+
+jobs:
+  postman_tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the repository
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      # Step 3: Install dependencies (Newman and HTML Reporter)
+      - name: Install Newman
+        run: npm install -g newman newman-reporter-html
+
+      # Step 4: Run the Postman collection and generate HTML report
+      - name: Run Postman Collection and Generate HTML Report
+        run: |
+          npx newman run postman/sys-api-oauth.postman_collection.json \
+          --environment postman/sys-api-oauth.postman_environment.json \
+          --reporters cli,html \
+          --reporter-html-export newman/newman-report.html \
+          --reporter-cli-no-failures # Avoids exit on failures, so we can inspect
+
+      # Step 5: Calculate Test Coverage Based on Newman CLI Results
+      - name: Calculate Test Coverage
+        id: coverage
+        run: |
+          TOTAL_TESTS=$(npx newman run postman/sys-api-oauth.postman_collection.json \
+            --environment postman/sys-api-oauth.postman_environment.json \
+            --reporters cli,json --reporter-json-export newman/newman-temp-report.json \
+            | grep 'executed' | awk '{print $1}') 
+          
+          PASSED_TESTS=$(jq '.run.stats.tests.passed' newman/newman-temp-report.json)
+          
+          # Calculate coverage percentage
+          COVERAGE=$(echo "scale=2; ($PASSED_TESTS / $TOTAL_TESTS) * 100" | bc)
+          
+          echo "Total Tests: $TOTAL_TESTS"
+          echo "Passed Tests: $PASSED_TESTS"
+          echo "Coverage: $COVERAGE%"
+
+          # Fail the workflow if coverage is less than 80%
+          if (( $(echo "$COVERAGE < 80" | bc -l) )); then
+            echo "Test coverage is below 80% ($COVERAGE%)"
+            exit 1
+          else
+            echo "Test coverage is above 80% ($COVERAGE%)"
+          fi
+
+      # Step 6: Upload HTML Report as an Artifact
+      - name: Upload HTML Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: newman-html-report
+          path: newman/newman-report.html
+
+      # Step 7: Deploy Only if Coverage is Greater Than 80%
+      - name: Deploy Application
+        if: success()
+        run: |
+          echo "Deploying application..."
+          # Add your deployment commands here
+

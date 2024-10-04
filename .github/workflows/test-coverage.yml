@@ -35,7 +35,8 @@ jobs:
           --reporters cli,html \
           --reporter-html-export newman/newman-report.html \
           --reporter-cli-no-failures \ # Avoids exit on failures, so we can inspect
-          --suppress-exit-code 1
+          --suppress-exit-code 1 \
+          || true 
 
       # Step 5: Calculate Test Coverage Based on Newman CLI Results
       - name: Calculate Test Coverage

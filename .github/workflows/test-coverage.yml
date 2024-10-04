@@ -42,7 +42,7 @@ jobs:
         id: coverage
         if: always()
         run: |
-          TOTAL_TESTS=$(npx newman run postman/sys-api-oauth.postman_collection.json \
+          TOTAL_TESTS=$(npx newman run postman/sys-api-oauth_error.postman_collection.json \
             --environment postman/sys-api-oauth.postman_environment.json \
             --reporters cli,json --reporter-json-export newman/newman-temp-report.json \
             | grep 'executed' | awk '{print $1}') 

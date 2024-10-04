@@ -6,7 +6,7 @@ on:
       - test-coverage  # Run on pushes to the test-coverage branch
   pull_request:
     branches:
-      - test-coverage   # Run on pull requests targeting the test-coverage branch
+      - test-coverage  # Run on pull requests targeting the test-coverage branch
 
 jobs: 
   postman_tests:

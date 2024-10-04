@@ -3,10 +3,10 @@ name: Run Postman Collection with HTML Report and Coverage Check
 on:
   push:
     branches:
-      - test-coverage  # Run on pushes to the test-coverage branch
+      - error-test-coverage  # Run on pushes to the test-coverage branch
   pull_request:
     branches:
-      - test-coverage  # Run on pull requests targeting the test-coverage branch
+      - error-test-coverage  # Run on pull requests targeting the test-coverage branch
 
 jobs: 
   postman_tests:
@@ -31,8 +31,8 @@ jobs:
       - name: Run Postman Collection and Generate HTML Report
         continue-on-error: true  # Continue even if there are errors
         run: |
-          npx newman run sys-api-oauth-error.postman_collection.json \
-          --environment postman/sys-api-oauth.postman_environment.json \
+          npx newman run error-postman/sys-api-oauth-error.postman_collection.json \
+          --environment error-postman/sys-api-oauth.postman_environment.json \
           --reporters cli,html,json \
           --reporter-html-export newman/newman-report.html \
           --reporter-json-export newman/newman-temp-report.json
@@ -42,8 +42,8 @@ jobs:
         id: coverage
         if: always()
         run: |
-          TOTAL_TESTS=$(npx newman run sys-api-oauth-error.postman_collection.json \
-            --environment postman/sys-api-oauth.postman_environment.json \
+          TOTAL_TESTS=$(npx newman run error-postman/sys-api-oauth-error.postman_collection.json \
+            --environment error-postman/sys-api-oauth.postman_environment.json \
             --reporters cli,json --reporter-json-export newman/newman-temp-report.json \
             | grep 'executed' | awk '{print $1}') 
           

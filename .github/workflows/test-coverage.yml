@@ -1,4 +1,4 @@
-name: Run Postman Collection with HTML Report and Coverage Check
+name: Run Postman Collection with HTML Report and Coverage Check 
 
 on:
   push:

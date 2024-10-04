@@ -52,11 +52,11 @@ jobs:
           # Calculate coverage percentage
           COVERAGE=$(echo "scale=2; ($PASSED_TESTS / $TOTAL_TESTS) * 100" | bc)
           # Fail the workflow if coverage is less than 80%
-          if (( $(echo "$COVERAGE < 80" | bc -l) )); then
-            echo "Test coverage is below 80% ($COVERAGE%)"
+          if (( $(echo "$COVERAGE > 80" | bc -l) )); then
+            echo "Test coverage is above 80% ($COVERAGE%)"
             exit 1
           else
-            echo "Test coverage is above 80% ($COVERAGE%)"
+            echo "Test coverage is below 80% ($COVERAGE%)"
             echo "Total Tests: $TOTAL_TESTS"
             echo "Passed Tests: $PASSED_TESTS"
             echo "Coverage: $COVERAGE%"

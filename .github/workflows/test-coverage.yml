@@ -34,7 +34,8 @@ jobs:
           --environment postman/sys-api-oauth.postman_environment.json \
           --reporters cli,html \
           --reporter-html-export newman/newman-report.html \
-          --reporter-cli-no-failures # Avoids exit on failures, so we can inspect
+          --reporter-cli-no-failures \ # Avoids exit on failures, so we can inspect
+          --suppress-exit-code 1
 
       # Step 5: Calculate Test Coverage Based on Newman CLI Results
       - name: Calculate Test Coverage

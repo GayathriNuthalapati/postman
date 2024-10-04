@@ -64,7 +64,6 @@ jobs:
 
       # Step 6: Upload HTML Report as an Artifact
       - name: Upload HTML Report
-        if: always()  # Always upload the report, even if tests fail
         uses: actions/upload-artifact@v3
         with:
           name: newman-html-report
@@ -75,7 +74,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: newman-json-report
-          path: newman-report.json
+          path: newman/newman-temp-report.json
 
       # Step 8: Deploy Only if Coverage is Greater Than 80%
       - name: Deploy Application

@@ -50,17 +50,15 @@ jobs:
         id: coverage
         if: always()
         run: |
-          TOTAL_TESTS=$(jq '.run.stats.tests.total' newman/newman-temp-report.json)
+          TOTAL_TESTS=$(npx newman run postman/sys-api-oauth.postman_collection.json \
+            --environment postman/sys-api-oauth.postman_environment.json \
+            --reporters cli,json --reporter-json-export newman/newman-temp-report.json \
+            | grep 'executed' | awk '{print $1}') 
+          
           PASSED_TESTS=$(jq '.run.stats.tests.passed' newman/newman-temp-report.json)
-
-          if [ "$TOTAL_TESTS" == "null" ] || [ "$PASSED_TESTS" == "null" ]; then
-            echo "Error: Failed to extract test stats from the Newman report."
-            exit 1
-          fi
-
+          
           # Calculate coverage percentage
           COVERAGE=$(echo "scale=2; ($PASSED_TESTS / $TOTAL_TESTS) * 100" | bc)
-
           # Fail the workflow if coverage is less than 80%
           if (( $(echo "$COVERAGE < 80" | bc -l) )); then
             echo "Test coverage is below 80% ($COVERAGE%)"

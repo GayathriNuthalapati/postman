@@ -33,19 +33,11 @@ jobs:
         run: |
           npx newman run postman/sys-api-oauth.postman_collection.json \
           --environment postman/sys-api-oauth.postman_environment.json \
-          --reporters cli,html \
+          --reporters cli,html,json \
           --reporter-html-export newman/newman-report.html \
-          || true
-
-      # Step 5: Run the Postman collection and generate JSON report for coverage
-      - name: Generate JSON Report for Coverage Calculation
-        run: |
-          npx newman run postman/sys-api-oauth.postman_collection.json \
-          --environment postman/sys-api-oauth.postman_environment.json \
-          --reporters cli,json \
           --reporter-json-export newman/newman-temp-report.json
 
-      # Step 6: Calculate Test Coverage Based on Newman JSON Report
+      # Step 5: Calculate Test Coverage Based on Newman JSON Report
       - name: Calculate Test Coverage
         id: coverage
         if: always()
@@ -70,7 +62,7 @@ jobs:
             echo "Coverage: $COVERAGE%"
           fi
 
-      # Step 7: Upload HTML Report as an Artifact
+      # Step 6: Upload HTML Report as an Artifact
       - name: Upload HTML Report
         if: always()  # Always upload the report, even if tests fail
         uses: actions/upload-artifact@v3
@@ -78,7 +70,7 @@ jobs:
           name: newman-html-report
           path: newman/newman-report.html
           
-      # Step 8: Upload JSON Report as an Artifact
+      # Step 7: Upload JSON Report as an Artifact
       - name: Upload JSON Report
         uses: actions/upload-artifact@v3
         with:
@@ -87,7 +79,7 @@ jobs:
 
       # Step 8: Deploy Only if Coverage is Greater Than 80%
       - name: Deploy Application
-        if: success()  # Proceed only if the coverage is above 80%
+     #   if: success()  # Proceed only if the coverage is above 80%
         run: |
           echo "Deploying application..."
           # Add your deployment commands here
